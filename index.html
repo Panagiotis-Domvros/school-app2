@@ -41,6 +41,12 @@
       font-weight: bold; 
       color: #008080;
     }
+    /* Ειδικά στυλ για πεδία που πρέπει να είναι κεφαλαία */
+    #classInput, #studentClass, #lessonFilter, 
+    #privateClass, #searchClassInput {
+      text-transform: uppercase;
+    }
+    /* Γενικά στυλ για inputs */
     input[type="text"], input[type="password"], input[type="date"], textarea, select {
       width: calc(100% - 22px); 
       padding: 10px; 
@@ -48,7 +54,6 @@
       border: 1px solid #ddd; 
       border-radius: 4px;
       background-color: #f8f8f0;
-      text-transform: uppercase; /* Αυτόματη μετατροπή σε κεφαλαία κατά την πληκτρολόγηση */
     }
     button {
       background-color: #008080;
