@@ -63,7 +63,7 @@ const searchLastNameInput = document.getElementById("searchLastNameInput");
 const searchClassInput = document.getElementById("searchClassInput");
 const searchPrivateNotesBtn = document.getElementById("searchPrivateNotesBtn");
 
-// Αυτόματη μετατροπή σε κεφαλαία για συγκεκριμένα πεδία
+// Αυτόματη μετατροπή σε κεφαλαία
 const setupUpperCaseInputs = () => {
   const uppercaseInputs = [
     classInput, studentClassInput, 
@@ -171,7 +171,7 @@ submitLessonBtn.addEventListener("click", async () => {
   }
 });
 
-// View Lessons Function
+// View Lessons Function (Βελτιωμένη έκδοση)
 viewLessonsBtn.addEventListener("click", async () => {
   const studentClass = studentClassInput.value.trim().toUpperCase();
   const lessonFilter = lessonFilterInput.value.trim().toUpperCase();
@@ -204,7 +204,7 @@ viewLessonsBtn.addEventListener("click", async () => {
         orderBy("date", "desc")
       );
     } else {
-      // Guests see all (filtered by class/lesson)
+      // Guests see all (filtered by class/lesson) without teacher email
       q = query(
         collection(db, "lessons"),
         where("class", "==", studentClass),
@@ -224,10 +224,17 @@ viewLessonsBtn.addEventListener("click", async () => {
       const data = docSnap.data();
       const card = document.createElement("div");
       card.className = "lesson-card";
+      
+      // Ασφαλής εμφάνιση - κρύβει το email εκτός αν είναι διαχειριστής ή δικός του
+      const showTeacherInfo = auth.currentUser && 
+                           (auth.currentUser.email === 'pa.domvros@gmail.com' || 
+                            auth.currentUser.email === data.teacherEmail);
+      
       card.innerHTML = `
         <h4>${data.lesson} - ${data.class} (${data.date})</h4>
         <p><strong>Ύλη:</strong> ${data.taughtMaterial}</p>
         <p><strong>Προσοχή:</strong> ${data.attentionNotes || "—"}</p>
+        ${showTeacherInfo ? `<small>Καθηγητής: ${data.teacherEmail}</small>` : ''}
       `;
       
       if (auth.currentUser && (auth.currentUser.email === 'pa.domvros@gmail.com' || 
@@ -254,7 +261,7 @@ viewLessonsBtn.addEventListener("click", async () => {
   }
 });
 
-// Private Notes Functions
+// Private Notes Functions (Χωρίς αλλαγές - όπως πριν)
 submitPrivateNoteBtn.addEventListener("click", async () => {
   const lastName = privateLastName.value.trim();
   const classVal = privateClass.value.trim().toUpperCase();
@@ -278,12 +285,9 @@ submitPrivateNoteBtn.addEventListener("click", async () => {
     privateNoteMessage.textContent = "Η σημείωση αποθηκεύτηκε!";
     privateNoteMessage.className = "success-message";
     
-    // Clear form
     privateLastName.value = "";
     privateClass.value = "";
     privateNotesInput.value = "";
-    
-    // Reload notes
     loadPrivateNotes();
   } catch (error) {
     privateNoteMessage.textContent = "Σφάλμα: " + error.message;
@@ -303,7 +307,6 @@ async function loadPrivateNotes(lastName = "", classVal = "") {
   let q;
 
   if (auth.currentUser?.email === 'pa.domvros@gmail.com') {
-    // Director sees all (with optional filters)
     if (lastName && classVal) {
       q = query(
         collection(db, "privateNotes"),
@@ -330,7 +333,6 @@ async function loadPrivateNotes(lastName = "", classVal = "") {
       );
     }
   } else if (auth.currentUser) {
-    // Teachers see only their own (with optional filters)
     if (lastName && classVal) {
       q = query(
         collection(db, "privateNotes"),
