@@ -1,176 +1,165 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Παναγιώτης Δόμβρος - Διευθυντής 1ου Γυμνασίου Πυλαίας</title>
-  <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      margin: 20px; 
-      background-color: #f8f8f0;
-      color: #333; 
-    }
-    .container { 
-      max-width: 900px; 
-      margin: auto; 
-      background: white; 
-      padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-    }
-    h1 { 
-      color: #008080;
-      font-size: 26px; 
-      border-bottom: 2px solid #D4AF37;
-      padding-bottom: 10px;
-    }
-    h2, h3, h4 { 
-      color: #008080;
-      margin-top: 10px; 
-    }
-    h2 {
-      font-size: 14px;
-      color: #666;
-      font-weight: normal;
-      margin-top: 5px;
-    }
-    label { 
-      display: block; 
-      margin-bottom: 5px; 
-      font-weight: bold; 
-      color: #008080;
-    }
-    /* Ειδικά στυλ για πεδία που πρέπει να είναι κεφαλαία */
-    #classInput, #studentClass, #lessonFilter, 
-    #privateClass, #searchClassInput {
-      text-transform: uppercase;
-    }
-    /* Γενικά στυλ για inputs */
-    input[type="text"], input[type="password"], input[type="date"], textarea, select {
-      width: calc(100% - 22px); 
-      padding: 10px; 
-      margin-bottom: 15px; 
-      border: 1px solid #ddd; 
-      border-radius: 4px;
-      background-color: #f8f8f0;
-    }
-    button {
-      background-color: #008080;
-      color: white; 
-      padding: 10px 15px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 16px; 
-      margin-right: 10px;
-    }
-    button:hover { 
-      background-color: #006666;
-    }
-    .lesson-card {
-      background-color: #f0f8f8;
-      border: 1px solid #cce5e5; 
-      border-left: 5px solid #D4AF37;
-      padding: 15px; 
-      margin-bottom: 10px; 
-      border-radius: 5px; 
-      position: relative;
-    }
-    .delete-btn {
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      background-color: #D4AF37;
-      color: #333;
-    }
-    .delete-btn:hover { 
-      background-color: #b38f2b;
-    }
-    .error-message { 
-      color: #c00; 
-      margin-top: 10px; 
-    }
-    .success-message { 
-      color: #008080; 
-      margin-top: 10px; 
-    }
-    .info-message { 
-      color: #D4AF37;
-      margin-top: 10px;
-    }
-    .capitalize-hint {
-      font-size: 12px;
-      color: #D4AF37;
-      font-style: italic;
-      margin-top: -10px;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Παρακολούθηση Προόδου</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Βιβλιοθήκες για την Εξαγωγή σε PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Καταχωρίσεις Ύλης</h1>
-    <h2>Δημιουργία: Παναγιώτης Δόμβρος - Διευθυντής 1ου Γυμνασίου Πυλαίας, All rights reserved 2025-26</h2>
 
-    <div id="loginForm">
-      <label for="email">Email:</label>
-      <input type="text" id="email" />
-      <label for="password">Κωδικός:</label>
-      <input type="password" id="password" />
-      <button id="loginBtn">Σύνδεση Εκπαιδευτικού</button>
-      <p id="loginError" class="error-message"></p>
+    <!-- Οθόνη Σύνδεσης (Εμφανίζεται αρχικά) -->
+    <div id="login-container">
+        <div id="login-box">
+            <h2>Σύνδεση στην Εφαρμογή</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Κωδικός Πρόσβασης:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Σύνδεση</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+        </div>
     </div>
 
-    <div id="adminSection" style="display:none;">
-      <h3>Καταχώριση Ύλης</h3>
-      <label for="lessonInput">Μάθημα:</label>
-      <input type="text" id="lessonInput" required />
-      <label for="classInput">Τμήμα:</label>
-      <input type="text" id="classInput" required />
-      <label for="dateInput">Ημερομηνία:</label>
-      <input type="date" id="dateInput" required />
-      <label for="taughtMaterialInput">Ύλη που διδάχθηκε:</label>
-      <textarea id="taughtMaterialInput" required></textarea>
-      <label for="attentionNotesInput">Τι πρέπει να προσέξουν οι μαθητές:</label>
-      <textarea id="attentionNotesInput"></textarea>
-      <button id="submitLessonBtn">Καταχώριση Ύλης</button>
-      <p id="adminMessage" class="success-message"></p>
-      <button id="logoutBtn">Αποσύνδεση Εκπαιδευτικού</button>
+    <!-- Κύρια Εφαρμογή (Κρυμμένη αρχικά) -->
+    <div id="app-container" style="display: none;">
+        <header>
+            <h1>Παρακολούθηση Προόδου</h1>
+            <div id="user-info">
+                <span id="user-email"></span>
+                <button id="logout-button">Αποσύνδεση</button>
+            </div>
+        </header>
 
-      <div id="privateNotesSection">
-        <h3>Ιδιωτικές Σημειώσεις</h3>
-        <label for="privateLastName">Επίθετο Μαθητή:</label>
-        <input type="text" id="privateLastName" required />
-        <label for="privateClass">Τμήμα:</label>
-        <input type="text" id="privateClass" required />
-        <label for="privateNotesInput">Σημειώσεις:</label>
-        <textarea id="privateNotesInput" required></textarea>
-        <button id="submitPrivateNoteBtn">Καταχώριση Σημείωσης</button>
-        <p id="privateNoteMessage" class="success-message"></p>
+        <main id="main-content">
+            <!-- Ενότητα Στοιχείων Μαθητών/τριών -->
+            <section id="student-details" class="data-section">
+                <h2>Στοιχεία Μαθητών/τριών</h2>
+                <form id="student-form">
+                    <div class="form-group">
+                        <label for="student-name">Ονοματεπώνυμο:</label>
+                        <input type="text" id="student-name" name="student-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="father-name">Πατρώνυμο:</label>
+                        <input type="text" id="father-name" name="father-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="class-section">Τμήμα:</label>
+                        <input type="text" id="class-section" name="class-section" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="subject">Μάθημα:</label>
+                        <input type="text" id="subject" name="subject">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Μαθητή/τριας</button>
+                        <button type="button" id="delete-student" class="delete-button">Διαγραφή Μαθητή/τριας</button>
+                    </div>
+                </form>
+            </section>
 
-        <h4>Αναζήτηση Σημειώσεων</h4>
-        <label for="searchLastNameInput">Επίθετο Μαθητή:</label>
-        <input type="text" id="searchLastNameInput" />
-        <label for="searchClassInput">Τμήμα:</label>
-        <input type="text" id="searchClassInput" />
-        <button id="searchPrivateNotesBtn">Αναζήτηση Σημειώσεων</button>
-        <div id="privateNotesList"></div>
-      </div>
+            <!-- Ενότητα Γραπτών Δοκιμασιών -->
+            <section id="written-tests" class="data-section">
+                <h2>Γραπτές Δοκιμασίες</h2>
+                <form id="test-form">
+                    <div class="form-group">
+                        <label for="test-type">Γραπτή Δοκιμασία:</label>
+                        <select id="test-type" name="test-type">
+                            <option value="Σύντομη">Σύντομη</option>
+                            <option value="Ωριαία">Ωριαία</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="test-date">Ημερομηνία:</label>
+                        <input type="date" id="test-date" name="test-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="test-grade">Βαθμός:</label>
+                        <input type="text" id="test-grade" name="test-grade">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Δοκιμασίας</button>
+                        <button type="button" id="delete-test" class="delete-button">Διαγραφή Τελευταίας Δοκιμασίας</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Ενότητα Προφορικής Εξέτασης -->
+            <section id="oral-exams" class="data-section">
+                <h2>Προφορική Εξέταση</h2>
+                <form id="oral-exam-form">
+                     <div class="form-group">
+                        <label for="oral-date">Ημερομηνία:</label>
+                        <input type="date" id="oral-date" name="oral-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="oral-comment">Σχόλιο:</label>
+                        <textarea id="oral-comment" name="oral-comment" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Εξέτασης</button>
+                        <button type="button" id="delete-oral" class="delete-button">Διαγραφή Τελευταίας Εξέτασης</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Ενότητα Γενικών Παρατηρήσεων -->
+            <section id="general-observations" class="data-section">
+                <h2>Γενικές Παρατηρήσεις</h2>
+                <form id="observations-form">
+                    <div class="form-group">
+                        <label>Ονοματεπώνυμο:</label>
+                        <p id="observation-student-name"><i>(Επιλέξτε μαθητή/τρια από τη λίστα)</i></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="observations-text">Παρατηρήσεις:</label>
+                        <textarea id="observations-text" name="observations-text" rows="4"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Παρατήρησης</button>
+                        <button type="button" id="delete-observation" class="delete-button">Διαγραφή Παρατηρήσεων</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Ενότητα Αναζήτησης και Λίστας Μαθητών/τριών -->
+            <section id="search-section" class="data-section">
+                <h2>Αναζήτηση Μαθητή/τριας</h2>
+                 <div class="form-group">
+                    <label for="search-lastname">Αναζήτηση (Επίθετο):</label>
+                    <input type="text" id="search-lastname" placeholder="Εισάγετε επίθετο...">
+                </div>
+                 <div class="form-group">
+                    <label for="search-class">Αναζήτηση (Τμήμα):</label>
+                    <input type="text" id="search-class" placeholder="Εισάγετε τμήμα...">
+                </div>
+                <h3>Λίστα Μαθητών/τριών</h3>
+                <div id="student-list">
+                    <!-- Οι μαθητές/τριες θα προστεθούν εδώ με JavaScript -->
+                </div>
+            </section>
+        </main>
+        
+        <div class="export-container">
+             <button id="export-pdf">Εξαγωγή Καρτέλας σε PDF</button>
+        </div>
+
+        <footer>
+            <p>Δημιουργία: Παναγιώτης Δόμβρος - Διευθυντής 1ου Γυμνασίου Πυλαίας, All rights reserved 2025-26</p>
+        </footer>
     </div>
 
-    <h3>Προβολή Ύλης</h3>
-    <label for="lessonFilter">Μάθημα:</label>
-    <input type="text" id="lessonFilter" required />
-    <p class="capitalize-hint">(Θα μετατραπούν αυτόματα σε ΚΕΦΑΛΑΙΑ)</p>
-    <label for="studentClass">Τμήμα:</label>
-    <input type="text" id="studentClass" required />
-    <p class="capitalize-hint">(Θα μετατραπούν αυτόματα σε ΚΕΦΑΛΑΙΑ)</p>
-    <button id="viewLessonsBtn">Προβολή Ύλης</button>
-    <p id="guestMessage" class="info-message"></p>
-    <div id="lessonsContainer"></div>
-  </div>
-
-  <script type="module" src="./main.js"></script>
+    <!-- Το script.js φορτώνεται ως module για να μπορεί να κάνει import τις λειτουργίες του Firebase -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
